@@ -13,7 +13,8 @@ class BrickSetSpider(scrapy.Spider):
             for brickset in response.css(SET_SELECTOR):
 
                 NAME_SELECTOR = 'a ::text'
-                URL_PAGE = 'a ::attr(href)'
+                URL_CATEGORY = brickset.css('a ::attr(href)').extract_first()
+                print('URL ', URL_CATEGORY)
 
-                if not URL_PAGE in LIST_CATEGORY:
-                    LIST_CATEGORY.append(url)
+#                 if not URL_PAGE in LIST_CATEGORY:
+#                     LIST_CATEGORY.append(url)
