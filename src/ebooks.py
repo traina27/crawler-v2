@@ -1,0 +1,48 @@
+import scrapy
+import database.handles.select as select
+import database.handles.create as create
+from scrapy.crawler import CrawlerProcess
+
+class spider(scrapy.Spider):
+#    listCategories = select.all('categories')
+   start_urls = ['https://sachvui.com/the-loai/tam-ly-ky-nang-song.html']
+#    for i in listCategories:
+#        start_urls.append(i[2])
+   name = "brickset_spider"
+
+   def parse(self, response, url_category = False):
+       URL_CATEGORY = response.url
+       # GET ID SITE
+       ID_CATEGORY = select._one('id', URL_CATEGORY, 'url', 'categories')
+       print('url_category ', url_category)
+
+
+       SET_SELECTOR = '.col-xs-6.col-md-3.col-sm-3.ebook'
+       for brickset in response.css(SET_SELECTOR):
+
+           URL_EBOOK = brickset.css('a ::attr(href)').extract_first()
+           print('URL_BOOK ', URL_EBOOK)
+#            checkExistsEbook = select._one('id', URL_EBOOK, 'url', 'ebooks')
+#            if checkExistsEbook == False:
+#                create.insertEbook(ID_CATEGORY, URL_EBOOK)
+
+       NEXT_PAGE_SELECTOR = '.pagination.pagination-sm li a[rel="next"] ::attr(href)'
+       URL_NEXT_PAGE = response.css(NEXT_PAGE_SELECTOR).extract_first()
+       if URL_NEXT_PAGE:
+           print('Nexxxt >> ', URL_NEXT_PAGE)
+           yield scrapy.Request(
+               response.urljoin(URL_NEXT_PAGE),
+               callback=self.parse,
+               cb_kwargs=dict(url_category=URL_CATEGORY)
+           )
+
+
+process = CrawlerProcess(settings= {
+    'LOG_ENABLED': False,
+    'LOG_LEVEL': 'ERROR',
+    'DOWNLOAD_DELAY': 0.5
+
+})
+
+process.crawl(spider)
+process.start()
