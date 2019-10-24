@@ -19,7 +19,6 @@ class spider(scrapy.Spider):
 
        SET_SELECTOR = '.col-xs-6.col-md-3.col-sm-3.ebook'
        for brickset in response.css(SET_SELECTOR):
-
            URL_EBOOK = brickset.css('a ::attr(href)').extract_first()
            checkExistsEbook = select._one('id', URL_EBOOK, 'url', 'ebooks')
            if checkExistsEbook == False:
@@ -34,7 +33,6 @@ class spider(scrapy.Spider):
                callback=self.parse,
                cb_kwargs=dict(url_category=MAIN_URL)
            )
-
 
 process = CrawlerProcess(settings= {
     'LOG_ENABLED': False,

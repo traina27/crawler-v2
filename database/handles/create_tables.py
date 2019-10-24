@@ -41,8 +41,8 @@ __TABLE = {
     'chapters': """CREATE TABLE {0} (
        id INT AUTO_INCREMENT PRIMARY KEY,
        name VARCHAR(255),
+       url VARCHAR(255),
        ebook_id INT,
-       order_chapter INT,
        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )""",
