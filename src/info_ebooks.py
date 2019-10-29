@@ -2,9 +2,8 @@ import scrapy
 import datetime
 import database.handles.select as select
 import database.handles.create as create
-from src.MagazineCover import MagazineCover
+from src.Item import ImageItem
 from scrapy.crawler import CrawlerProcess
-from scrapy.pipelines.images import ImagesPipeline
 
 class spider(scrapy.Spider):
 #    listEbook = select.all('ebooks')
@@ -63,7 +62,9 @@ class spider(scrapy.Spider):
         pub = datetime.datetime.now()
         print('URL ', URL_IMAGE)
         if URL_IMAGE:
-            yield MagazineCover(title=NAME_EBOOK, pubDate=pub, file_urls=[URL_IMAGE])
+            AA = yield ImageItem(type='images', image_urls=[URL_IMAGE])
+            print('aaa', AA)
+
 
 
    def parse_chapter(self, response, id_ebook):
@@ -96,9 +97,9 @@ process = CrawlerProcess(settings= {
     'LOG_LEVEL': 'ERROR',
     'DOWNLOAD_DELAY': 0.5,
     'ITEM_PIPELINES': {
-        'scrapy.pipelines.files.FilesPipeline': 1
+        'src.pipelines.MyImagesPipeline': 1
     },
-    'FILES_STORE': 'files/images/'
+    'FILES_STORE': 'files/'
 })
 
 process.crawl(spider)
