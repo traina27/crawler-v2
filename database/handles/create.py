@@ -46,3 +46,17 @@ def insertChapter(name, url, ebook_id):
         dbCur.close()
     except Error as e:
         logging.error('Error: Insert chapter {}'.format(e))
+
+def insertInfoBook(ebook_id, url, name, description, author):
+    try:
+        db = storage.connect()
+        dbCur = db.cursor()
+
+        insertQuery = """INSERT INTO info_ebooks (ebook_id, url, name, description, author) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}') """.format(ebook_id, url, name, description, author)
+
+        dbCur.execute(insertQuery)
+        db.commit()
+
+        dbCur.close()
+    except Error as e:
+        logging.error('Error: Insert info book {}'.format(e))

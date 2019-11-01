@@ -28,6 +28,7 @@ __TABLE = {
     'info_ebooks': """CREATE TABLE {0} (
        id INT AUTO_INCREMENT PRIMARY KEY,
        ebook_id INT,
+       url VARCHAR(255),
        name VARCHAR(255),
        description LONGTEXT,
        author VARCHAR(255),
@@ -35,6 +36,7 @@ __TABLE = {
        url_dw_epub VARCHAR(255),
        url_dw_mobi VARCHAR(255),
        url_dw_pdf VARCHAR(255),
+       url_image VARCHAR(255),
        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )""",
