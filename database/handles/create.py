@@ -60,3 +60,17 @@ def insertInfoBook(ebook_id, url, name, description, author):
         dbCur.close()
     except Error as e:
         logging.error('Error: Insert info book {}'.format(e))
+
+def insertContent(chapter_id, content):
+    try:
+        db = storage.connect()
+        dbCur = db.cursor()
+
+        insertQuery = """INSERT INTO contents (chapter_id, contents) VALUES ({0}, '{1}') """.format(chapter_id, content)
+
+        dbCur.execute(insertQuery)
+        db.commit()
+
+        dbCur.close()
+    except Error as e:
+        logging.error('Error: Insert content {}'.format(e))

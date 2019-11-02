@@ -7,9 +7,9 @@ from scrapy.crawler import CrawlerProcess
 
 class spider(scrapy.Spider):
    listEbook = select.all('ebooks')
-   start_urls = []
-   for i in listEbook:
-       start_urls.append(i[2])
+   start_urls = ['https://sachvui.com/ebook/cach-hoc-ngoai-ngu-nhanh-va-khong-bao-gio-quen-gabriel-wyner.2745.html']
+#    for i in listEbook:
+#        start_urls.append(i[2])
    name = "brickset_spider"
    STT = 0
 
@@ -131,6 +131,7 @@ process = CrawlerProcess(settings= {
     'LOG_ENABLED': False,
     'LOG_LEVEL': 'INFO',
     'DOWNLOAD_DELAY': 5,
+    'DOWNLOAD_FAIL_ON_DATALOSS': False,
     'ITEM_PIPELINES': {
         'src.pipelines.MyImagesPipeline': 1
     },
