@@ -5,6 +5,7 @@ import re
 from scrapy.pipelines.files import FilesPipeline
 from urllib.parse import urlparse
 import database.handles.update as update
+import src.helper.uploadFileGL as UploadFileGL
 
 class MyImagesPipeline(FilesPipeline):
     def file_path(self, request, response=None, info=None):
@@ -22,13 +23,19 @@ class MyImagesPipeline(FilesPipeline):
     def item_completed(self, results, item, info):
         URL_PATH = results[0][1]['path']
         ID = item['id_info_ebook']
+        FOLDER_GG = item['folderGG']
         FIELD = 'url_image'
+
         if item['type'] == 'pdf':
             FIELD = 'url_dw_pdf'
         elif item['type'] == 'epub':
             FIELD = 'url_dw_epub'
         elif item['type'] == 'mobi':
             FIELD = 'url_dw_mobi'
-        update.updateInfoEbook(FIELD, URL_PATH, ID)
+
+        NAME_IMAGE = URL_PATH.split('/')
+        ID_FILE = UploadFileGL.uploadFile(NAME_IMAGE[1], 'files/' + URL_PATH, '*/*', [FOLDER_GG])
+        update.updateInfoEbook(FIELD, ID_FILE, ID)
+        os.remove('files/' + URL_PATH)
         return
 

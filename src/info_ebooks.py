@@ -1,15 +1,22 @@
 import scrapy
 import datetime
+import configparser
 import database.handles.select as select
 import database.handles.create as create
 from src.Item import ImageItem
 from scrapy.crawler import CrawlerProcess
+import src.helper.uploadFileGL as UploadFileGL
+
+CONFIG = configparser.ConfigParser()
+CONFIG.read('config.ini')
+
+FOLDER_MAIN = CONFIG['googleDrive']['folderMain']
 
 class spider(scrapy.Spider):
    listEbook = select.all('ebooks')
-   start_urls = ['https://sachvui.com/ebook/cach-hoc-ngoai-ngu-nhanh-va-khong-bao-gio-quen-gabriel-wyner.2745.html']
-#    for i in listEbook:
-#        start_urls.append(i[2])
+   start_urls = []
+   for i in listEbook:
+       start_urls.append(i[2])
    name = "brickset_spider"
    STT = 0
 
@@ -31,6 +38,8 @@ class spider(scrapy.Spider):
             TEXT__AUTHOR = _author.css('::text').get()
             if 'Tác giả : ' in TEXT__AUTHOR:
                 NAME_AUTHOR = TEXT__AUTHOR.replace('Tác giả : ', '')
+
+        FOLDER_GG_DRIVER = UploadFileGL.createFolder(NAME_EBOOK, FOLDER_MAIN)
 
         # GET DESCRIPTION EBOOK
         DESCRIPTION_TEXT_LIST = response.css('.gioi_thieu_sach.text-justify *').getall()
@@ -73,14 +82,14 @@ class spider(scrapy.Spider):
             if URL_IMAGE:
                 getURL = select._one('url_image', IDInfo, 'id', 'info_ebooks')
                 if not getURL:
-                    yield ImageItem(type='images', image_url=URL_IMAGE, id_info_ebook=IDInfo)
+                    yield ImageItem(type='images', image_url=URL_IMAGE, id_info_ebook=IDInfo, folderGG=FOLDER_GG_DRIVER)
 
             # DOWNLOAD PDF
             if URL_DOWN_PDF:
                 yield scrapy.Request(
                     URL_DOWN_PDF,
                     callback=self.parse_file,
-                    cb_kwargs=dict(type='pdf',IDInfo=IDInfo)
+                    cb_kwargs=dict(type='pdf',IDInfo=IDInfo,folderGG=FOLDER_GG_DRIVER)
                 )
 
             # DOWNLOAD EPUB
@@ -88,7 +97,7 @@ class spider(scrapy.Spider):
                 yield scrapy.Request(
                     URL_DOWN_EPUB,
                     callback=self.parse_file,
-                    cb_kwargs=dict(type='epub',IDInfo=IDInfo)
+                    cb_kwargs=dict(type='epub',IDInfo=IDInfo,folderGG=FOLDER_GG_DRIVER)
                 )
 
             # DOWNLOAD MOBI
@@ -96,7 +105,7 @@ class spider(scrapy.Spider):
                 yield scrapy.Request(
                     URL_DOWN_MOBI,
                     callback=self.parse_file,
-                    cb_kwargs=dict(type='mobi',IDInfo=IDInfo)
+                    cb_kwargs=dict(type='mobi',IDInfo=IDInfo,folderGG=FOLDER_GG_DRIVER)
                 )
 
 
@@ -120,11 +129,11 @@ class spider(scrapy.Spider):
                 cb_kwargs=dict(id_ebook=id_ebook)
             )
 
-   def parse_file(self, response, type, IDInfo):
+   def parse_file(self, response, type, IDInfo, folderGG):
         if response.url:
             getURL = select._one('url_dw_{0}'.format(type), IDInfo, 'id', 'info_ebooks')
             if not getURL:
-                yield ImageItem(type=type, image_url=response.url, id_info_ebook=IDInfo)
+                yield ImageItem(type=type, image_url=response.url, id_info_ebook=IDInfo,folderGG=folderGG)
 
 
 process = CrawlerProcess(settings= {
