@@ -2,6 +2,6 @@ Scrapy==1.7.3
 mysql-connector-python==8.0.18
 configparser==4.0.2
 coloredlogs==10.0
-Pillow==6.2.1
+Pillow==8.3.2
 apiclient==1.0.4
 oauth2client==4.1.3
